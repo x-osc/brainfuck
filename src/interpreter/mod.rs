@@ -25,7 +25,10 @@ pub fn run<W: Write>(source: &str, input: &str, mut out: W) -> io::Result<()> {
                     memory[pointer] = inp as u8;
                 }
             }
-            '.' => out.write_all(&[memory[pointer]])?,
+            '.' => {
+                out.write_all(&[memory[pointer]])?;
+                out.flush()?;
+            }
             '[' => {
                 if memory[pointer] == 0 {
                     let mut bracket_count = 1;
