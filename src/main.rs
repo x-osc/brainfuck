@@ -4,7 +4,7 @@ use std::{
     path::PathBuf,
 };
 
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 mod interpreter;
 
@@ -12,7 +12,7 @@ mod interpreter;
 #[derive(Parser, Debug)]
 #[command(version)]
 #[command(propagate_version = true)]
-struct Args {
+struct CliArgs {
     #[command(subcommand)]
     command: Commands,
 }
@@ -20,17 +20,28 @@ struct Args {
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Run a single brainfuck file
-    Bf { path: PathBuf },
+    Bf(BfArgs),
+}
+
+#[derive(Args, Debug)]
+struct BfArgs {
+    path: PathBuf,
+    #[arg(short, long)]
+    input: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+    let args = CliArgs::parse();
 
     match &args.command {
-        Commands::Bf { path } => {
-            let contents = fs::read_to_string(&path)?;
+        Commands::Bf(bf_args) => {
+            let contents = fs::read_to_string(&bf_args.path)?;
 
-            interpreter::run(contents, "".into(), BufWriter::new(io::stdout()))?;
+            interpreter::run(
+                &contents,
+                &bf_args.input.as_deref().unwrap_or(""),
+                BufWriter::new(io::stdout()),
+            )?;
         }
     }
 

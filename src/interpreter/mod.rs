@@ -2,7 +2,7 @@
 
 use std::io::{self, Write};
 
-pub fn run<W: Write>(source: String, input: String, mut out: W) -> io::Result<()> {
+pub fn run<W: Write>(source: &str, input: &str, mut out: W) -> io::Result<()> {
     let program: Vec<char> = source.chars().collect();
     let mut input = input.bytes();
 
